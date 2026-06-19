@@ -521,6 +521,15 @@ def build_excel(df, title):
     return buf.getvalue()
 
 
+def _i(x):
+    """int odporny na NaN/None (NaN or 0 zwraca NaN, a int(NaN) rzuca ValueError)."""
+    try:
+        v = float(x)
+        return 0 if pd.isna(v) else int(v)
+    except (TypeError, ValueError):
+        return 0
+
+
 def cards_html(top):
     cards = []
     for _, r in top.iterrows():
@@ -534,7 +543,7 @@ def cards_html(top):
             f'<div class="sub">{klub}<br>liga wiodąca: {lead}</div>'
             f'<div class="pmlbl">PM Index</div><div class="pm">{r["PM_Index"]:.2f}</div>'
             f'<div class="row">{rok} · {age}</div>'
-            f'<div class="row">{int(r.get("min_total") or 0)} min · {int(r.get("mecze_total") or 0)} meczów (sezon)</div>'
+            f'<div class="row">{_i(r.get("min_total"))} min · {_i(r.get("mecze_total"))} meczów (sezon)</div>'
             f'<div class="badges">{badges_html(r)}</div></div>')
     return '<div class="pmrow">' + "".join(cards) + "</div>"
 
